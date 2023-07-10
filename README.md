@@ -109,3 +109,13 @@ PID(Process ID)
     * case
     * cond
     * do/endブロック
+
+## 例外
+* 例外とは
+* Check Point 1: Elixirでの例外処理
+* Check Point 2: Elixirのエラーハンドリング構文
+* raise
+* try/rescue
+* try/catch
+* after
+* exit
