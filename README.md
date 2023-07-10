@@ -100,3 +100,12 @@ PID(Process ID)
 * パターンマッチ上のアンダースコア
 * アンダースコアから始まる変数
 * 値の不変性
+
+## 制御構造
+* 制御構造とは
+* 制御構想の種類
+    * if, if・else
+    * unless, unless・else
+    * case
+    * cond
+    * do/endブロック
