@@ -297,3 +297,7 @@ PID(Process ID)
 8. テンプレートによる文生成
 9. 暗号文
 10. TypoglycemiaPermalink
+
+## データ加工・変換を使用したワーク
+* 演習
+* 解答例
