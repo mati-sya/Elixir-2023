@@ -323,3 +323,8 @@ Elixirのデータ型
 
 ## ワーク
 * DBの作成からテーブル、スキーマの作成、Repo.getを使用したワーク
+
+## Repo.insert
+
+## チェンジセット、バリデーション
+* cast/4, validate_required/3
