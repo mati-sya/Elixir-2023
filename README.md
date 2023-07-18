@@ -13,23 +13,23 @@ Elixirのデータ型
 * 文字列(string)
 
 ## データ型
-整数(integer)
-浮動小数点数(float)
-アトム(atom)
-真偽値(boolean value)
-nil
-ビットストリング(bitstring)
-バイナリ(binary)
-文字列(string)
-リスト(list)
-文字リスト(charlist)
-キーワードリスト(keyword list)
-タプル(tuple)
-マップ(map)
-関数(function)
-PID(Process ID)
-リファレンス(reference)
-ポート識別子(port identifier)
+* 整数(integer)
+* 浮動小数点数(float)
+* アトム(atom)
+* 真偽値(boolean value)
+* nil
+* ビットストリング(bitstring)
+* バイナリ(binary)
+* 文字列(string)
+* リスト(list)
+* 文字リスト(charlist)
+* キーワードリスト(keyword list)
+* タプル(tuple)
+* マップ(map)
+* 関数(function)
+* PID(Process ID)
+* リファレンス(reference)
+* ポート識別子(port identifier)
 
 ## 数値
 
@@ -320,3 +320,6 @@ PID(Process ID)
 * Repo.all/2
 * Repo.get/3
 * Repo.get_by/3
+
+## ワーク
+* DBの作成からテーブル、スキーマの作成、Repo.getを使用したワーク
