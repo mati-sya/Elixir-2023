@@ -7,6 +7,7 @@ defmodule Example.MixProject do
       version: "0.1.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(), # commands defined in function aliases
       deps: deps()
     ]
   end
@@ -16,6 +17,14 @@ defmodule Example.MixProject do
     [
       extra_applications: [:logger],
       mod: {Example.Application, []}
+    ]
+  end
+
+  # commands "mix ecto.setup", "mix ecto.reset"
+  defp aliases do
+    [
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"]
     ]
   end
 
