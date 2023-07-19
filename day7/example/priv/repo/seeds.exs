@@ -12,7 +12,8 @@ for {last_name, first_name, age} <- users do
     %User{
       first_name: first_name,
       last_name: last_name,
-      age: age
+      age: age,
+      email: first_name <> "@sample.com"
     }
 
   # insert into DB
