@@ -2,9 +2,9 @@ alias Example.Repo
 alias Example.User
 
 users = [
-  {"Yamada", "Taro", "40"},
-  {"Sato", "Hanako", "38"},
-  {"Suzuki", "Jiro", "53"}
+  {"Yamada", "Taro", 20},
+  {"Sato", "Hanako", 18},
+  {"Suzuki", "Jiro", 23}
 ]
 
 for {last_name, first_name, age} <- users do
@@ -16,6 +16,5 @@ for {last_name, first_name, age} <- users do
       email: first_name <> "@sample.com"
     }
 
-  # insert into DB
   Repo.insert(user)
 end
