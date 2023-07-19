@@ -335,3 +335,6 @@ Elixirのデータ型
 
 ## Repo.delete
 * Ecto.Repo.delete/2
+
+## Day8 ワーク
+* チェンジセット、バリデーションを使用したワーク

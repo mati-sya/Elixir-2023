@@ -43,4 +43,25 @@ defmodule ApiToEcto do
       lon: String.to_float(h["設置地点"]["地理座標"]["緯度"])
     }
   end
+
+  ## DAY8 WORK
+  def get_csv(path \\ "lat_lon.csv") do
+    # data type = File.Stream
+    file = File.stream!(path)
+    # data type = Stream
+    CSV.decode!(file, headers: true)
+    # StreamをMapのListにする
+    |> Enum.map(& &1)
+    # Enum.mapで関数get_dataを呼び出してPlacesのリストを返す
+    |> Enum.map(fn x -> get_data(x) end)
+  end
+
+  defp get_data(map) do
+    %Places{
+      name: map["大字町丁目コード"],
+      address: map["都道府県名"] <> map["市区町村名"],
+      lat: String.to_float(map["緯度"]),
+      lon: String.to_float(map["経度"])
+    }
+  end
 end

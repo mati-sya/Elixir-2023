@@ -33,7 +33,8 @@ defmodule ApiToEcto.MixProject do
       {:ecto_sql, "~> 3.9"},
       {:postgrex, "~> 0.16.5"},
       {:jason, "~> 1.4"},
-      {:httpoison, "~> 1.8"}
+      {:httpoison, "~> 1.8"},
+      {:csv, "~> 3.0"}
     ]
   end
 end

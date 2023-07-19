@@ -11,5 +11,7 @@ defmodule ApiToEcto.Repo.Migrations.CreatePlaces do
       # inserted_at, updated_at colums
       timestamps()
     end
+    # インデックス名をオプションで指定します
+    create unique_index(:places, [:name, :address], name: :places_name_address_index)
   end
 end
