@@ -328,3 +328,10 @@ Elixirのデータ型
 
 ## チェンジセット、バリデーション
 * cast/4, validate_required/3
+* unique_constraint/3、unsafe_validate_unique/4、validate_format/4
+
+## Repo.update
+* Ecto.Repo.update/2
+
+## Repo.delete
+* Ecto.Repo.delete/2
