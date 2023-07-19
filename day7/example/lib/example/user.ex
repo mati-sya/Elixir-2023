@@ -6,7 +6,6 @@ defmodule Example.User do
   schema "users" do
     field(:first_name, :string)
     field(:last_name, :string)
-    field(:age, :integer)
     field(:email, :string)
 
     # inserted_at, updated_at colums
@@ -17,7 +16,7 @@ defmodule Example.User do
     user
     # cast & validate_required = Ecto.Changeset functions
     # [cast] Applies the given params as changes on the data according to the set of permitted keys. Returns a changeset.
-    |> cast(params, [:first_name, :last_name, :age, :email])
+    |> cast(params, [:first_name, :last_name, :email])
     # Validates that one or more fields are present in the changeset.
     |> validate_required([:first_name, :last_name])
     |> validate_email()
