@@ -8,13 +8,12 @@ defmodule ApiToEcto.Places do
   end
 
   # idでデータを取得する関数の作成
-  def get_place(id) do
-    if is_integer(id) do
-      Repo.get(Place, id)
-    else
-      nil
-    end
+  def get_place(id) when is_integer(id) do
+    Repo.get(Place, id)
   end
+
+  # idがIntegerじゃない場合nilを返す
+  def get_place(_id), do: nil
 
   # データを挿入する関数の作成
   # 引数 place = Place構造体, e.g. %Place{name: "12345", address: "東京都練馬区"}
@@ -31,17 +30,15 @@ defmodule ApiToEcto.Places do
   end
 
   # データを削除する関数の作成
-  def delete_place(id) do
-    if is_integer(id) do
-      place = Repo.get(Place, id)
-      if place != nil do
-        Repo.delete(place)
-      else
-        nil
-      end
+  def delete_place(id) when is_integer(id) do
+    place = Repo.get(Place, id)
+
+    if place != nil do
+      Repo.delete(place)
     else
       nil
     end
   end
 
+  def delete_place(_id), do: nil
 end
