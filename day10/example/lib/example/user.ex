@@ -15,6 +15,7 @@ defmodule Example.User do
     user
     |> cast(params, [:first_name, :last_name, :age])
     |> validate_required([:first_name, :last_name])
+    |> validate_last_name()
     |> validate_email()
   end
 
@@ -31,5 +32,15 @@ defmodule Example.User do
     |> cast(params, [:first_name, :last_name, :age])
     |> validate_required(:first_name, message: "Please enter your first name.")
     |> validate_required(:last_name, message: "Please enter your last name.")
+  end
+
+  # custom validation
+  def validate_last_name (cs) do
+    last_name = get_field(cs, :last_name)
+    if last_name in ["Sato", "Suzuki", "Takahashi", "Tanaka", "Ito"] do
+      cs
+    else
+      add_error(cs, :last_name, "Please use the last name specified.")
+    end
   end
 end
