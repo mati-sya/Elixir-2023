@@ -1,25 +1,47 @@
 defmodule ApiToEcto.Places do
-  use Ecto.Schema
-  import Ecto.Changeset
+  alias ApiToEcto.Repo
+  alias ApiToEcto.Place
 
-  schema "places" do
-    field :name, :string
-    field :address, :string
-    field :lat, :float
-    field :lon, :float
-
-    timestamps()
+  # すべてのデータを取得する関数の作成
+  def get_places() do
+    Repo.all(Place)
   end
 
-  def changeset(place, params \\ %{}) do
-    place
-    # Applies the given params as changes on the data according to the set of permitted keys. Returns a changeset.
-    |> cast(params, [:name, :address, :lat, :lon])
-    # validation
-    |> validate_required([:name, :address, :lat, :lon])
-    |> validate_required(:name, message: "Please set a name.")
-    # validate name
-    |> unique_constraint([:name, :address], message: "A place with this name has already been registered.")
-    |> unsafe_validate_unique(:name, ApiToEcto.Repo, message: "A place with this address has already been registered.")
+  # idでデータを取得する関数の作成
+  def get_place(id) do
+    if is_integer(id) do
+      Repo.get(Place, id)
+    else
+      nil
+    end
   end
+
+  # データを挿入する関数の作成
+  # 引数 place = Place構造体, e.g. %Place{name: "12345", address: "東京都練馬区"}
+  def create_place(place) do
+    Repo.insert(place)
+  end
+
+  # データを更新する関数の作成
+  # 引数place = 挿入しているデータ
+  # 引数params = 変更内容のデータ(map)
+  def update_place(place, params) do
+    cs = Place.changeset(place, params)
+    Repo.update(cs)
+  end
+
+  # データを削除する関数の作成
+  def delete_place(id) do
+    if is_integer(id) do
+      place = Repo.get(Place, id)
+      if place != nil do
+        Repo.delete(place)
+      else
+        nil
+      end
+    else
+      nil
+    end
+  end
+
 end

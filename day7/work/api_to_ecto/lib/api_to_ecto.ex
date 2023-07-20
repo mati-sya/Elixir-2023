@@ -1,5 +1,5 @@
 defmodule ApiToEcto do
-  alias ApiToEcto.Places
+  alias ApiToEcto.Place
 
   @moduledoc """
   Documentation for `ApiToEcto`.
@@ -36,7 +36,7 @@ defmodule ApiToEcto do
     [name | _] = h["設置地点"]["名称"]
 
     # 取得したデータをPlaces構造体に保存
-    %Places{
+    %Place{
       name: name["表記"],
       address: h["設置地点"]["住所"]["表記"],
       lat: String.to_float(h["設置地点"]["地理座標"]["経度"]),
@@ -44,7 +44,7 @@ defmodule ApiToEcto do
     }
   end
 
-  ## DAY8 WORK
+  ## DAY8 WORK, DAY9 WORK
   def get_csv(path \\ "lat_lon.csv") do
     # data type = File.Stream
     file = File.stream!(path)
@@ -57,9 +57,9 @@ defmodule ApiToEcto do
   end
 
   defp get_data(map) do
-    %Places{
+    %Place{
       name: map["大字町丁目コード"],
-      address: map["都道府県名"] <> map["市区町村名"],
+      address: map["都道府県名"] <> map["市区町村名"] <> map["大字町丁目名"],
       lat: String.to_float(map["緯度"]),
       lon: String.to_float(map["経度"])
     }

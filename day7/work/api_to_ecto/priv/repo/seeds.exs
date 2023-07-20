@@ -1,5 +1,5 @@
 alias ApiToEcto.Repo
-alias ApiToEcto.Places
+alias ApiToEcto.Place
 
 ### DAY7 WORK ###
 # ApiToEcto.api_call("https://api.data.metro.tokyo.lg.jp/v1//WifiAccessPoint")
