@@ -2,6 +2,7 @@ defmodule MyModTest do
   use ExUnit.Case
   # doctestを呼び出す
   doctest MyMod
+  # doctest MyModule, except: [:moduledoc, trick_fun: 1]
 
   describe "Integer+1 group" do
     test "Integer+1_1" do
