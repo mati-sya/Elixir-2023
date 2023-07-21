@@ -1,4 +1,4 @@
-defmodule EctoTranscation.User do
+defmodule EctoTransaction.User do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -6,7 +6,9 @@ defmodule EctoTranscation.User do
     field(:name, :string)
     field(:email, :string)
     has_one :point, EctoTransaction.Point
-    has_many :point_logs, EctoTranscation.PointLog
+    has_many :point_logs, EctoTransaction.PointLog
+    has_many :get_items, EctoTransaction.GetItem
+    has_many :items, through: [:get_items, :item]
   end
 
   def changeset(user, params) do

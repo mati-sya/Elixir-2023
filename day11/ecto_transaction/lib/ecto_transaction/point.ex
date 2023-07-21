@@ -1,4 +1,4 @@
-defmodule EctroTransaction.Point do
+defmodule EctoTransaction.Point do
   use Ecto.Schema
   import Ecto.Changeset
 
