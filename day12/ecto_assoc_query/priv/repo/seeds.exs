@@ -1,4 +1,14 @@
-alias EctoAssocQuery.{Repo, Artist, MusicList, Music, User, PrayList, PrayListMusic, ActiveUser, DeleteUser}
+alias EctoAssocQuery.{
+  Repo,
+  Artist,
+  MusicList,
+  Music,
+  User,
+  PlayList,
+  PlayListMusic,
+  ActiveUser,
+  DeleteUser
+}
 
 csv_data =
   "day12_music.csv"
@@ -52,7 +62,6 @@ for {music, music_list_name} <- music do
   |> Repo.insert()
 end
 
-
 user =
   %User{}
   |> User.changeset(%{name: "taro", email: "taro@sample.com"})
@@ -61,21 +70,21 @@ user =
 Repo.insert(%ActiveUser{user: user})
 
 for index <- 1..2 do
-  pray_list =
-    %PrayList{user: user}
-    |> PrayList.changeset(%{name: "pray list #{index}"})
+  play_list =
+    %PlayList{user: user}
+    |> PlayList.changeset(%{name: "play list #{index}"})
     |> Repo.insert!()
 
-  pray_list_data =
-    "day12_pray_list#{index}.csv"
+  play_list_data =
+    "day12_play_list#{index}.csv"
     |> File.stream!()
     |> CSV.decode!(headers: true)
     |> Enum.map(fn data -> data["music_name"] end)
 
-  for music_name <- pray_list_data do
+  for music_name <- play_list_data do
     music = Repo.get_by(Music, name: music_name)
 
-    %PrayListMusic{pray_list: pray_list, music: music}
+    %PlayListMusic{play_list: play_list, music: music}
     |> Repo.insert!()
   end
 end
