@@ -1,5 +1,5 @@
 defmodule EctoAssocQuery.Core do
-  alias EctoAssocQuery.{Repo, User, Artist}
+  alias EctoAssocQuery.{Repo, User, Artist, Music}
   import Ecto.Query
 
   def get_active_users() do
@@ -32,7 +32,7 @@ defmodule EctoAssocQuery.Core do
     |> Enum.uniq()
   end
 
-  # left join
+  # left join: returns all users (left join --> if not active user result of ":active_user" is "nil")
   def get_users() do
     query =
       from(u in User,
@@ -52,5 +52,25 @@ defmodule EctoAssocQuery.Core do
       )
 
     Repo.one(query)
+  end
+
+  # subquery
+  def search_musics(music_list_id, value) do
+    pattern = "%#{value}%"
+
+    sub_query =
+      from(m in Music,
+        where: like(m.name, ^pattern)
+      )
+
+    query =
+      from(m in Music,
+        # ms = music subquery (?)
+        join: ms in subquery(sub_query),
+        on: m.id == ms.id,
+        where: m.music_list_id == ^music_list_id
+      )
+
+    Repo.all(query)
   end
 end

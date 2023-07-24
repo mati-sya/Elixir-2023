@@ -7,7 +7,7 @@ defmodule EctoAssocQuery.User do
     field(:email, :string)
     has_many :play_lists, EctoAssocQuery.PlayList
     has_many :play_list_musics, through: [:play_lists, :play_list_musics]
-    has_many :musics, through: [:play_list_musics, :musics]
+    has_many :musics, through: [:play_list_musics, :music]
     has_many :music_lists, through: [:musics, :music_list]
     has_many :artists, through: [:music_lists, :artist]
     has_one :active_user, EctoAssocQuery.ActiveUser
