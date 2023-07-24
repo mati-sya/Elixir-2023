@@ -14,6 +14,7 @@ defmodule BlogApp.Blog.Post do
     post
     |> cast(attrs, [:title, :body])
     |> validate_required([:title, :body])
+    # title cant be longer than 30 characters
     |> validate_length(:title, max: 30)
   end
 end
