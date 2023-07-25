@@ -19,6 +19,31 @@ defmodule TodoAppWeb.Router do
 
     # get送信, 1) path "/", 2) controller name for, 3) action name when accessing root
     get "/", PageController, :home
+
+    # add new page
+    # send info to /hello with get method and process inside module HelloController
+    get "/hello", HelloController, :hello
+
+    # # add tasks page
+    # get "/tasks", TaskController, :index
+    # # page for adding new task
+    # get "/tasks/new", TaskController, :new
+    # # page reached after creating task
+    # post "/tasks", TaskController, :create
+    # # page for showing details of specific task
+    # # :id becomes number (e.g. /tasks/1)
+    # get "/tasks/:id", TaskController, :show
+    # # pages when updating task
+    # get "/tasks/:id/edit", TaskController, :edit
+    # # PATCHはすでにある情報の一部だけ更新するためのメソッド
+    # patch "/tasks/:id", TaskController, :update
+    # # PUTはすでにある情報を全体的に更新するためのメソッド
+    # put "/tasks/:id", TaskController, :update
+    # # DELETEは情報を削除するための方法
+    # delete "/tasks/:id", TaskController, :delete
+
+    # create all the actions above in one line
+    resources "/tasks", TaskController
   end
 
   # Other scopes may use custom stacks.

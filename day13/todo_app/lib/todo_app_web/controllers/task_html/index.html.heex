@@ -1,0 +1,31 @@
+<.header>
+  Todo List
+  <:subtitle>
+    It shows tasks that have not yet been completed.
+  </:subtitle>
+  <:actions>
+    <.link href={~p"/tasks/new"}>
+      <.button>New Task</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<!-- @tasks = tasks sent by controller (render function) -->
+<.table id="tasks" rows={@tasks}>
+  <:col :let={task} label="Title"><%= task.title %></:col>
+  <:col :let={task} label="Date"><%= task.date %></:col>
+  <!-- add column with link to detail page -->
+  <:action :let={task}>
+    <.link navigate={~p"/tasks/#{task}"}>Show</.link>
+  </:action>
+  <!-- add column with edit link -->
+  <:action :let={task}>
+    <.link navigate={~p"/tasks/#{task}/edit"}>Edit</.link>
+  </:action>
+  <!-- add column with delete link -->
+  <:action :let={task}>
+    <.link href={~p"/tasks/#{task}"} method="delete" data-confirm="Do you want to delete it?">
+      Delete
+    </.link>
+  </:action>
+</.table>
