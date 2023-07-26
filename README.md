@@ -385,7 +385,7 @@ Elixirのデータ型
 * Phoenix Framworkについて
 * MVC概要について
 
-## Phoenix Frameworkを私用したtodoアプリの作成
+## PhoenixFrameworkを使用したtodoアプリの作成
 * ディレクトリ構造について
 * WebブラウザにHelloWorldを表示する方法
 * todoアプリを作成
@@ -394,3 +394,7 @@ Elixirのデータ型
     * タスクの詳細ページの作成
     * タスク更新機能の作成
     * タスク削除機能の作成
+
+## Day 14: Phoenix Framework
+* Phoenix FrameworkdでのJSライブラリの読み込みについて
+* ワーク：PhoenixFrameworkを使用した家計簿アプリの作成

@@ -1,0 +1,16 @@
+<.header>
+  Category <%= @category.id %>
+  <:subtitle>This is a category record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/categories/#{@category}/edit"}>
+      <.button>Edit category</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Category name"><%= @category.category_name %></:item>
+  <:item title="Color code"><%= @category.color_code %></:item>
+</.list>
+
+<.back navigate={~p"/categories"}>Back to categories</.back>

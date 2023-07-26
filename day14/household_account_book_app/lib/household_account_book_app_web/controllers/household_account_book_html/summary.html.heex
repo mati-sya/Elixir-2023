@@ -1,0 +1,145 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<%
+  money =
+    Enum.map(@money_by_categories, fn {_category, _color_code, money} -> money end)
+  balance = @sum_incomes - Enum.sum(money)
+  balance = if balance > 0, do: balance, else: 0
+  money_by_categories =
+    @money_by_categories
+    |> Enum.map(fn {category, color_code, money} ->
+        %{"category" => category, "color_code" => color_code, "money" => money}
+      end)
+    |> List.insert_at(-1, %{"category" => "残高", "color_code" => "#d3d3d3", "money" => balance})
+
+  # 円グラフを描画するために必要なカテゴリーデータ
+  categories =
+    money_by_categories
+    # Purchase struct, key category
+    |> Enum.map(& &1["category"])
+    |> inspect()
+  # 円グラフを描画するために必要なカラーコードのデータ
+  color_code =
+    money_by_categories
+    # Category struct
+    |> Enum.map(& &1["color_code"])
+    |> inspect()
+  # 円グラフを描画するために必要なカテゴリーごとの合計金額データ
+  categories_money =
+    money_by_categories
+    # Purchase struct
+    |> Enum.map(& &1["money"])
+    |> inspect()
+
+  # 棒グラフを描画するために必要な日付データ
+  date =
+    @money_by_date
+    |> Enum.map(fn {date, _money} -> Calendar.strftime(date, "%m-%d") end)
+    |> inspect() # => ["07-01", "07-02", "07-03", ...]
+  # 棒グラフを描画するために必要な日付ごとの合計金額のデータ
+  date_money =
+    @money_by_date
+    |> Enum.map(fn {_date, money} -> money end)
+    |> inspect()
+%>
+
+<!-- 円グラフを計画するために必要な値 -->
+<div id="categories" hidden><%= categories %></div>
+<div id="colorCode" hidden><%= color_code %></div>
+<div id="categoriesMoney" hidden><%= categories_money %></div>
+
+<!-- 棒グラフを描画するために必要な値 -->
+<div id="date" hidden><%= date %></div>
+<div id="dateMoney" hidden><%= date_money %></div>
+
+<.header>
+  Household account book <%= Calendar.strftime(@date, "%Y-%m") %>
+</.header>
+
+<form method="get" class="mt-4">
+  <input type="month" name="date" value={Calendar.strftime(@date, "%Y-%m")} required>
+  <button type="submit" class="rounded-lg bg-blue-300 px-4 py-2 ml-2">Search</button>
+</form>
+
+<div>
+    <canvas id="pieChart" class="max-w-md"></canvas>
+    <canvas id="barChart"></canvas>
+</div>
+
+<.table id="moneyByCategory" rows={money_by_categories}>
+  <:col :let={money_by_category} label="Category">
+    <%= money_by_category["category"] %>
+  </:col>
+
+  <:col :let={money_by_category} label="Total amount">
+    <%= money_by_category["money"] %>円
+  </:col>
+</.table>
+
+<script>
+  // 引数で受け取ったelementのテキストを文字列の要素を持った配列に変換する関数
+  function replaceAndSplitString(element) {
+    return element.textContent.split(',').map(value => value.replace(/(\'|\"|\[|\]| )/g, ''))
+  }
+
+  // 引数で受け取ったelementのテキストを整数の要素を持った配列に変換する関数
+  function replaceAndSplitStringToNumbers(element) {
+    return replaceAndSplitString(element).map(value => Number(value))
+  }
+
+  // 円グラフ
+
+  // 文字列で取得した値を配列に変換する 
+  var categories = replaceAndSplitString(document.getElementById('categories'))
+  var colorCode = replaceAndSplitString(document.getElementById('colorCode'))
+  var categoriesMoney = replaceAndSplitStringToNumbers(document.getElementById('categoriesMoney'))
+
+  // 円グラフを表示するためのエレメントを取得
+  var pieCtx = document.getElementById('pieChart')
+
+  // 円グラフを描画するためのデータを作成
+  // 文字列であれば、Elixirの値を使える
+  const pieChart = new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: categories,
+      datasets: [{
+        backgroundColor: colorCode,
+        data: categoriesMoney
+      }]
+    },
+    options: {
+      title: {
+        display: true,
+        // use Elixir code to set value
+        text: '<%= Calendar.strftime(@date, "%Y-%m") %>' // '2023-07'
+      }
+    }
+  })
+
+  // 棒グラフ
+  var date = replaceAndSplitString(document.getElementById('date'))
+  var dateMoney = replaceAndSplitStringToNumbers(document.getElementById('dateMoney'))
+
+  // 棒グラフを表示するためのエレメントを取得
+  var barCtx = document.getElementById('barChart')
+
+  // 棒グラフを描画するためのデータを作成
+  const barChart = new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: date,
+      datasets: [{
+        label: '',
+        data: dateMoney,
+        backgroundColor: '#00bfff'
+      }]
+    },
+    options: {
+      title: {
+        display: true,
+        text: '<%= Calendar.strftime(@date, "%Y-%m") %>'
+      }
+    }
+  })
+</script>

@@ -1,0 +1,16 @@
+<.header>
+  Income <%= @income.id %>
+  <:subtitle>This is a income record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/incomes/#{@income}/edit"}>
+      <.button>Edit income</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Money"><%= @income.money %></:item>
+  <:item title="Date"><%= @income.date %></:item>
+</.list>
+
+<.back navigate={~p"/incomes"}>Back to incomes</.back>
