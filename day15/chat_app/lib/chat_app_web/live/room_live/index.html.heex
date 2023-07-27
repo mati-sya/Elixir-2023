@@ -1,0 +1,47 @@
+<.header>
+  Listing Rooms
+  <:actions>
+    <.link patch={~p"/rooms/new"}>
+      <.button>New Room</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="rooms"
+  rows={@streams.rooms}
+  row_click={fn {_id, room} -> JS.navigate(~p"/rooms/#{room}") end}
+>
+  <:col :let={{_id, room}} label="Room name"><%= room.room_name %></:col>
+  <:action :let={{_id, room}}>
+    <div class="sr-only">
+      <.link navigate={~p"/rooms/#{room}"}>Show</.link>
+    </div>
+    <.link phx-click="join" phx-value-id={room.id} :if={@current_account.id not in Enum.map(room.accounts, & &1.id)}>
+      Join
+    </.link>
+  </:action>
+  <:action :let={{_id, room}}>
+    <.link patch={~p"/rooms/#{room}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, room}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: room.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="room-modal" show on_cancel={JS.patch(~p"/rooms")}>
+  <.live_component
+    module={ChatAppWeb.RoomLive.FormComponent}
+    id={@room.id || :new}
+    title={@page_title}
+    action={@live_action}
+    room={@room}
+    current_account={@current_account}
+    patch={~p"/rooms"}
+  />
+</.modal>

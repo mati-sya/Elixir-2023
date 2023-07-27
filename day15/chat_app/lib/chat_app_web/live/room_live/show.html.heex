@@ -1,0 +1,48 @@
+<.header>
+  Room <%= @room.id %>
+  <:subtitle>This is a room record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/rooms/#{@room}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit room</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.back navigate={~p"/rooms"}>Back to rooms</.back>
+
+<div id="scroll-box" phx-hook="scroll" class="border rounded-lg p-2 mt-2 h-96 overflow-auto">
+  <%= for message <- @messages do %>
+    <%
+      margin_class =
+        if @current_account.id == message.account_id, do: "ml-auto", else: "ml-0"
+    %>
+    <div class={margin_class <> " max-w-fit"}>
+      <div 
+        class={"text-xs text-gray-600 mt-2 mb-1 max-w-fit " <> margin_class}>
+        <%= message.account.email %>
+      </div>
+      <div 
+        class={"rounded-lg bg-gray-200 px-4 py-1 break-words w-fit max-w-sm " <> margin_class}>
+        <%= message.message %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<.simple_form for={@message_form} id="message-form" phx-hook="key" phx-submit="send_message">
+  <.input field={@message_form[:message]} id="message-input" type="text" placeholder="Enter please message"/>
+  <:actions>
+    <.button>Send message</.button>
+  </:actions>
+</.simple_form>
+
+<.modal :if={@live_action == :edit} id="room-modal" show on_cancel={JS.patch(~p"/rooms/#{@room}")}>
+  <.live_component
+    module={ChatAppWeb.RoomLive.FormComponent}
+    id={@room.id}
+    title={@page_title}
+    action={@live_action}
+    room={@room}
+    patch={~p"/rooms/#{@room}"}
+  />
+</.modal>

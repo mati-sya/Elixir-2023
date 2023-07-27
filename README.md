@@ -398,3 +398,7 @@ Elixirのデータ型
 ## Day 14: Phoenix Framework
 * Phoenix FrameworkdでのJSライブラリの読み込みについて
 * ワーク：PhoenixFrameworkを使用した家計簿アプリの作成
+
+## Day 15: Phoenix Live View
+* Phoenix LiveViewを使用したカウンターアプリの作成
+* Phoenix LiveViewを使用したチャットアプリの作成
