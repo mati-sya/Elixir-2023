@@ -19,7 +19,7 @@ defmodule CounterAppWeb.Router do
 
     get "/", PageController, :home
 
-    # Phoenix Live View --> live
+    # CounterLive --> counter_live.ex
     live "/counter", CounterLive, :index
   end
 

@@ -1,6 +1,8 @@
 defmodule CounterAppWeb.CounterLive do
   use CounterAppWeb, :live_view
 
+  # add template and event (function component)]
+  # event: phx-click="...", also functions: handle_event
   def render(assigns) do
     ~H"""
     <h1>This count is：<%= @value %></h1>
@@ -21,6 +23,7 @@ defmodule CounterAppWeb.CounterLive do
     {:ok, assign(socket, :value, 0)}
   end
 
+  # add events (functions: handle_event)
   def handle_event("inc", _params, socket) do
     socket =
       update(socket, :value, fn value ->
