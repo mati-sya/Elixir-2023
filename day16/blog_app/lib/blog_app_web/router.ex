@@ -23,11 +23,11 @@ defmodule BlogAppWeb.Router do
     # get "/", PageController, :home
 
     live_session :home_authenticated, on_mount: [{BlogAppWeb.AccountAuth, :mount_current_account}] do
-      live "/", ArticleLive.Summary, :summary
-      live "/articles/show/:article_id", ArticleLive.Show, :show
+      live "/", ArticleLive.Summary, :summary # live/article_live/summary.ex
+      live "/articles/show/:article_id", ArticleLive.Show, :show # live/article_live/show.ex
 
-      live "/accounts/profile/:account_id", AccountPageLive, :info
-      live "/accounts/profile/:account_id/liked", AccountPageLive, :liked
+      live "/accounts/profile/:account_id", AccountPageLive, :info # live/account_page_live.ex
+      live "/accounts/profile/:account_id/liked", AccountPageLive, :liked # live/account_page_live.ex
     end
   end
 

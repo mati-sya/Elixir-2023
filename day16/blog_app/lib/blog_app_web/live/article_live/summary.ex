@@ -36,6 +36,7 @@ defmodule BlogAppWeb.ArticleLive.Summary do
     socket =
       socket
       |> assign(:articles, Articles.list_articles())
+      # tab title of page
       |> assign(:page_title, "blog")
       |> assigns_form()
 
@@ -49,7 +50,9 @@ defmodule BlogAppWeb.ArticleLive.Summary do
 
     socket =
       socket
+      # @articles
       |> assign(:articles, Articles.search_articles_by_keyword(keyword))
+      # @form
       |> assigns_form()
 
     {:noreply, socket}
@@ -57,6 +60,7 @@ defmodule BlogAppWeb.ArticleLive.Summary do
 
   # for adding search bar to page
   defp assigns_form(socket) do
+    # @form
     assign(socket, :form, to_form(%{}, as: "search_article"))
   end
 end
