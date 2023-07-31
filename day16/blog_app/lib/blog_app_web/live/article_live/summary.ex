@@ -20,12 +20,13 @@ defmodule BlogAppWeb.ArticleLive.Summary do
       </.simple_form>
     </div>
 
-    <div :for={article <- @articles} calss="mt-2">
-    <a href={~p"/accounts/profile/#{article.account_id}"}>
-      <%= article.account.name %></a>
+    <div :for={article <- @articles} class="mt-2 border-2 rounded-lg px-4 py-2 cursor-pointer">
+      <a href={~p"/accounts/profile/#{article.account.id}"} class="hover:underline">
+        <%= article.account.name %>
+      </a>
       <a href={~p"/articles/show/#{article.id}"}>
-        <div><%= article.submit_date %></div>
-        <h2><%= article.title %></h2>
+        <div class="text-xs text-gray-600"><%= article.submit_date %></div>
+        <h2 class="text-2xl font-bold hover:underline my-2"><%= article.title %></h2>
         <div>Liked:<%= Enum.count(article.likes) %></div>
       </a>
     </div>

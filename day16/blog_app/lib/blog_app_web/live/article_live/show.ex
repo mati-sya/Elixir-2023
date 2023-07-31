@@ -10,13 +10,13 @@ defmodule BlogAppWeb.ArticleLive.Show do
       This is a limited article.
     </div>
     <div>
-      <a href={~p"/accounts/profile/#{@article.account_id}"}>
+      <a href={~p"/accounts/profile/#{@article.account_id}"} class="hover:underline">
         <%= @article.account.name %>
       </a>
-      <div><%= @article.submit_date %></div>
+      <div class="text-xs text-gray-600"><%= @article.submit_date %></div>
       <div>Liked:<%= Enum.count(@article.likes) %></div>
-      <h2><%= @article.title %></h2>
-      <div><%= @article.body %></div>
+      <h2 class="text-2xl font-bold my-2"><%= @article.title %></h2>
+      <div class="my-2 whitespace-pre-wrap"><%= @article.body %></div>
       <%
         # この記事に対していいねしていない人
         # アカウントにログインしている人
@@ -30,6 +30,7 @@ defmodule BlogAppWeb.ArticleLive.Show do
       <div
         phx-click="like_article"
         phx-value-account_id={@current_account_id}
+        class="rounded-lg bg-gray-200 w-min px-2 py-1 hover:bg-gray-400 cursor-pointer"
         :if={
           @current_account &&
           @current_account_id != @article.account_id &&
@@ -40,19 +41,23 @@ defmodule BlogAppWeb.ArticleLive.Show do
       </div>
     </div>
 
-    <div class="mt-4">
-      <h3>Comments</h3>
-      <div :for={comment <- @article.comments} class="mt-2 border-b">
-        <a href={~p"/accounts/profile/#{comment.account_id}"}><%= comment.account.name %></a>
-        <div><%= Calendar.strftime(comment.inserted_at, "%c") %></div>
-        <div><%= comment.body %></div>
+    <div class="mt-4 border-2 rounded-lg px-4 py-2">
+      <h3 class="text-2xl font-semibold">Comments</h3>
+      <div>
+        <div :for={comment <- @article.comments} class="mt-2 border-b last:border-b-0">
+          <a href={~p"/accounts/profile/#{comment.account_id}"} class="hover:underline">
+            <%= comment.account.name %>
+          </a>
+          <div class="text-xs text-gray-600"><%= Calendar.strftime(comment.inserted_at, "%c") %></div>
+          <div class="my-2 whitespace-pre-wrap"><%= comment.body %></div>
+        </div>
       </div>
 
       <.simple_form
         for={@form}
         phx-change="comment_validate"
         phx-submit="comment_save"
-        :if={@current_account != @article.account_id and @current_account}
+        :if={@current_account_id != @article.account_id and @current_account}
       >
         <.input field={@form[:body]} type="textarea" placeholder="Enter a comment." />
         <:actions>

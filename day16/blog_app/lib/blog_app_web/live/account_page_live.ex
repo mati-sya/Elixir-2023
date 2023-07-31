@@ -6,58 +6,72 @@ defmodule BlogAppWeb.AccountPageLive do
 
   def render(assigns) do
     ~H"""
-    <div>
-      <div><%= @account.name %></div>
-      <div><%= @account.email %></div>
-      <div><%= @account.introduction %></div>
+    <div class="border-2 rounded-lg px-2 py-4">
+      <div class="text-lg font-bold"><%= @account.name %></div>
+      <div class="text-sm text-gray-600"><%= @account.email %></div>
+      <div class="whitespace-pre-wrap my-2 border-b pb-2"><%= @account.introduction %></div>
       <div>Articles count:<%= @articles_count %></div>
-      <div :if={@account.id == @current_account_id}>
-        <a href={~p"/accounts/settings"}>Edit profile</a>
-      </div>
+      <a
+        href={~p"/accounts/settings"}
+        class="rounded-lg bg-gray-200 py-1 px-4 block mt-2 w-1/5 text-center"
+        :if={@account.id == @current_account_id}
+      >
+        Edit profile
+      </a>
     </div>
 
     <div>
-      <div>
-        <a href={~p"/accounts/profile/#{@account.id}"}>Articles</a>
-        <a href={~p"/accounts/profile/#{@account.id}/draft"} :if={@account.id == @current_account_id}>
+      <div class="border-b-2 my-2 flex gap-2 items-center">
+        <a href={~p"/accounts/profile/#{@account.id}"} class={tabs_class(@live_action, :info)}>Articles</a>
+        <a href={~p"/accounts/profile/#{@account.id}/draft"} class={tabs_class(@live_action, :draft)} :if={@account.id == @current_account_id}>
           Draft
         </a>
-        <a href={~p"/accounts/profile/#{@account.id}/liked"}>Liked</a>
+        <a href={~p"/accounts/profile/#{@account.id}/liked"} class={tabs_class(@live_action, :liked)}>Liked</a>
       </div>
 
       <div>
         <%= if length(@articles) > 0 do %>
-          <div :for={article <- @articles} class="mt-2">
-            <a href={~p"/accounts/profile/#{article.account.id}"}>
-              <%= article.account.name %>
-            </a>
-            <a href={~p"/articles/show/#{article.id}"} :if={@live_action in [:info, :liked]}>
-              <div><%= article.submit_date %></div>
-              <h2><%= article.title %></h2>
-              <div>Liked:<%= Enum.count(article.likes) %></div>
-            </a>
+          <div :for={article <- @articles} class="mt-2 border-b last:border-b-0 pb-2 mt-2 cursor-pointer flex justify-between">
+            <div>
+              <a href={~p"/accounts/profile/#{article.account.id}"} class="hover:underline">
+                <%= article.account.name %>
+              </a>
+              <a href={~p"/articles/show/#{article.id}"} :if={@live_action in [:info, :liked]}>
+                <div class="text-xs text-gray-600"><%= article.submit_date %></div>
+                <h2 class="text-2xl font-bold my-2 hover:underline"><%= article.title %></h2>
+                <div>Liked:<%= Enum.count(article.likes) %></div>
+              </a>
 
-            <a href={~p"/articles/#{article.id}/edit"} :if={@live_action == :draft}>
-              <div><%= article.title %></div>
-              <div :if={article.body}><%= String.slice(article.body, 0..30) %></div>
-            </a>
-
-            <%= if @live_action in [:info, :draft] do %>
-            <div phx-click="set_article_id" phx-value-article_id={article.id} :if={@account.id == @current_account_id}>
-            ...
+              <a href={~p"/articles/#{article.id}/edit"} :if={@live_action == :draft}>
+                <h2 class="text-2xl font-bold my-2 hover:underline"><%= article.title %></h2>
+                <div :if={article.body}><%= String.slice(article.body, 0..30) %></div>
+              </a>
             </div>
-            <div :if={article.id == @set_article_id} >
-                <a href={~p"/articles/#{article.id}/edit"}>Edit</a>
-                <span phx-click="delete_article" phx-value-article_id={article.id}>
+
+            <div :if={@live_action in [:info, :draft]} class="relative">
+              <div
+                phx-click="set_article_id"
+                phx-value-article_id={article.id}
+                class="border rounded w-min px-1 mt-2"
+                :if={@account.id == @current_account_id}
+              >
+                ...
+              </div>
+              <div :if={article.id == @set_article_id} class="absolute right-0 border rounded-lg mt-2 p-2 bg-white z-10">
+                <a href={~p"/articles/#{article.id}/edit"} class="block border-b pb-2 hover:underline">Edit</a>
+                <span
+                  phx-click="delete_article"
+                  phx-value-article_id={article.id}
+                  class="block mt-2 hover:underline"
+                >
                   Delete
                 </span>
+              </div>
             </div>
-            <% end %>
-
           </div>
         <% else %>
-          <div>
-          <%=
+          <div class="text-xl font-bold mt-2">
+            <%=
               case @live_action do
                 :info -> "No articles"
                 :draft -> "No draft articles"
@@ -252,5 +266,15 @@ defmodule BlogAppWeb.AccountPageLive do
       Articles.list_draft_articles_for_account(socket.assigns.current_account_id)
     )
     |> put_flash(:info, "Draft article deleted successfully.")
+  end
+
+  @tabs_class ~w(rounded-t-lg text-xl block p-2)
+  defp tabs_class(live_action, action) when live_action == action do
+    Enum.join(@tabs_class ++ ~w(bg-gray-400), " ") # => "rounded-t-lg text-xl block p-2 bg-gray-400"
+  end
+
+  defp tabs_class(_live_action, _action) do
+    Enum.join(@tabs_class ++ ~w(bg-gray-200 hover:bg-gray-400), " ")
+    # => "rounded-t-lg text-xl block p-2 bg-gray-200 hover:bg-gray-400"
   end
 end

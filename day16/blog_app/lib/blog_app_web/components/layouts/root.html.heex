@@ -12,48 +12,50 @@
     </script>
   </head>
   <body class="bg-white antialiased">
-    <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
-      <%= if @current_account do %>
-        <li class="text-[0.8125rem] leading-6 text-zinc-900">
-          <.link href={~p"/accounts/profile/#{@current_account.id}"}>
-          <%= @current_account.email %>
-          </.link>
-        </li>
-        <li>
-          <.link
-            href={~p"/accounts/settings"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Settings
-          </.link>
-        </li>
-        <li>
-          <.link
-            href={~p"/accounts/log_out"}
-            method="delete"
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Log out
-          </.link>
-        </li>
-      <% else %>
-        <li>
-          <.link
-            href={~p"/accounts/register"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Register
-          </.link>
-        </li>
-        <li>
-          <.link
-            href={~p"/accounts/log_in"}
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Log in
-          </.link>
-        </li>
-      <% end %>
+    <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-between mt-2">
+      <li class="font-extrabold hover:underline">
+        <.link href={~p"/"}>Home</.link>
+      </li>
+      <div class="flex gap-4 justify-end items-center">
+        <%= if @current_account do %>
+          <li class="text-sm font-semibold hover:underline">
+            <.link href={~p"/accounts/profile/#{@current_account.id}"}>
+              <%= @current_account.email %>
+            </.link>
+          </li>
+          <li class="text-sm font-semibold hover:underline">
+            <.link
+              href={~p"/accounts/log_out"}
+              method="delete"
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              Log out
+            </.link>
+          </li>
+          <li class="text-sm font-semibold hover:underline">
+            <.link href={~p"/articles/new"} class="rounded-lg bg-gray-200 hover:bg-gray-400 block px-8 py-2">
+              Post
+            </.link>
+          </li>
+        <% else %>
+          <li class="text-sm font-semibold hover:underline">
+            <.link
+              href={~p"/accounts/register"}
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              Register
+            </.link>
+          </li>
+          <li class="text-sm font-semibold hover:underline">
+            <.link
+              href={~p"/accounts/log_in"}
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              Log in
+            </.link>
+          </li>
+        <% end %>
+      </div>
     </ul>
     <%= @inner_content %>
   </body>
