@@ -130,6 +130,12 @@ defmodule BlogApp.Accounts.Account do
     change(account, confirmed_at: now)
   end
 
+  def profile_changeset(account, attrs) do
+    account
+    |> cast(attrs, [:name, :introduction])
+    |> validate_required(:name)
+  end
+
   @doc """
   Verifies the password.
 

@@ -1,22 +1,39 @@
-defmodule BlogAppWeb.AccountSettingsLive do
-  use BlogAppWeb, :live_view
+defmodule BlogAppWeb.AccountSettingsComponent do
+  use BlogAppWeb, :live_component
 
   alias BlogApp.Accounts
 
   def render(assigns) do
     ~H"""
+    <div>
     <.header class="text-center">
       Account Settings
       <:subtitle>Manage your account email address and password settings</:subtitle>
     </.header>
 
     <div class="space-y-12 divide-y">
+        <div>
+          <.simple_form
+            for={@profile_form}
+            id="profile_form"
+            phx-target={@myself}
+            phx-submit="update_profile"
+            phx-change="validate_profile"
+          >
+            <.input field={@profile_form[:name]} type="text" label="Name" required />
+            <.input field={@profile_form[:introduction]} type="textarea" label="Introduction" />
+            <:actions>
+              <.button phx-disabled-with="Changing...">Change Profile</.button>
+            </:actions>
+          </.simple_form>
+        </div>
       <div>
         <.simple_form
           for={@email_form}
           id="email_form"
           phx-submit="update_email"
           phx-change="validate_email"
+          phx-target={@myself}
         >
           <.input field={@email_form[:email]} type="email" label="Email" required />
           <.input
@@ -42,6 +59,7 @@ defmodule BlogAppWeb.AccountSettingsLive do
           phx-change="validate_password"
           phx-submit="update_password"
           phx-trigger-action={@trigger_submit}
+          phx-target={@myself}
         >
           <.input
             field={@password_form[:email]}
@@ -70,26 +88,45 @@ defmodule BlogAppWeb.AccountSettingsLive do
         </.simple_form>
       </div>
     </div>
+    </div>
     """
   end
 
-  def mount(%{"token" => token}, _session, socket) do
-    socket =
-      case Accounts.update_account_email(socket.assigns.current_account, token) do
-        :ok ->
-          put_flash(socket, :info, "Email changed successfully.")
+  # def mount(%{"token" => token}, _session, socket) do
+  #   socket =
+  #     case Accounts.update_account_email(socket.assigns.current_account, token) do
+  #       :ok ->
+  #         put_flash(socket, :info, "Email changed successfully.")
 
-        :error ->
-          put_flash(socket, :error, "Email change link is invalid or it has expired.")
-      end
+  #       :error ->
+  #         put_flash(socket, :error, "Email change link is invalid or it has expired.")
+  #     end
 
-    {:ok, push_navigate(socket, to: ~p"/accounts/settings")}
-  end
+  #   {:ok, push_navigate(socket, to: ~p"/accounts/settings")}
+  # end
 
-  def mount(_params, _session, socket) do
-    account = socket.assigns.current_account
+  # def mount(_params, _session, socket) do
+  #   account = socket.assigns.current_account
+  #   email_changeset = Accounts.change_account_email(account)
+  #   password_changeset = Accounts.change_account_password(account)
+
+  #   socket =
+  #     socket
+  #     |> assign(:current_password, nil)
+  #     |> assign(:email_form_current_password, nil)
+  #     |> assign(:current_email, account.email)
+  #     |> assign(:email_form, to_form(email_changeset))
+  #     |> assign(:password_form, to_form(password_changeset))
+  #     |> assign(:trigger_submit, false)
+
+  #   {:ok, socket}
+  # end
+
+  # LiveComponent function
+  def update(%{current_account: account} = assigns, socket) do
     email_changeset = Accounts.change_account_email(account)
     password_changeset = Accounts.change_account_password(account)
+    profile_changeset = Accounts.change_account_profile(account)
 
     socket =
       socket
@@ -99,8 +136,39 @@ defmodule BlogAppWeb.AccountSettingsLive do
       |> assign(:email_form, to_form(email_changeset))
       |> assign(:password_form, to_form(password_changeset))
       |> assign(:trigger_submit, false)
+      |> assign(assigns)
+      |> assign(:profile_form, to_form(profile_changeset))
 
     {:ok, socket}
+  end
+
+  def handle_event("validate_profile", %{"account" => params}, socket) do
+    profile_form =
+      socket.assigns.current_account
+      |> Accounts.change_account_profile(params)
+      |> to_form()
+
+    {:noreply, assign(socket, :profile_form, profile_form)}
+  end
+
+  def handle_event("update_profile", %{"account" => params}, socket) do
+    socket =
+      case Accounts.update_account_profile(socket.assigns.current_account, params) do
+        {:ok, account} ->
+          notify_parent({:update_profile, account})
+
+          profile_form =
+            account
+            |> Accounts.change_account_profile()
+            |> to_form()
+
+          assign(socket, :profile_form, profile_form)
+
+        {:error, cs} ->
+          assign(socket, :profile_form, to_form(cs))
+      end
+
+    {:noreply, socket}
   end
 
   def handle_event("validate_email", params, socket) do
@@ -121,6 +189,8 @@ defmodule BlogAppWeb.AccountSettingsLive do
 
     case Accounts.apply_account_email(account, password, account_params) do
       {:ok, applied_account} ->
+        notify_parent({:update_email, applied_account})
+
         Accounts.deliver_account_update_email_instructions(
           applied_account,
           account.email,
@@ -153,6 +223,7 @@ defmodule BlogAppWeb.AccountSettingsLive do
 
     case Accounts.update_account_password(account, password, account_params) do
       {:ok, account} ->
+        notify_parent({:update_password, account})
         password_form =
           account
           |> Accounts.change_account_password(account_params)
@@ -164,4 +235,6 @@ defmodule BlogAppWeb.AccountSettingsLive do
         {:noreply, assign(socket, password_form: to_form(changeset))}
     end
   end
+
+  defp notify_parent(msg), do: send(self(), msg)
 end

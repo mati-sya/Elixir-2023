@@ -8,9 +8,10 @@ defmodule BlogAppWeb.AccountSessionController do
     create(conn, params, "Account created successfully!")
   end
 
-  def create(conn, %{"_action" => "password_updated"} = params) do
+  def create(conn, %{"_action" => "password_updated", "account" => %{"email" => email}} = params) do
+    account = Accounts.get_account_by_email(email)
     conn
-    |> put_session(:account_return_to, ~p"/accounts/settings")
+    |> put_session(:account_return_to, ~p"/accounts/profile/#{account.id}")
     |> create(params, "Password updated successfully!")
   end
 

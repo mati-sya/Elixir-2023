@@ -57,17 +57,22 @@ defmodule BlogAppWeb.AccountPageLive do
           </div>
         <% else %>
           <div>
-            <%=
+          <%=
               case @live_action do
                 :info -> "No articles"
                 :draft -> "No draft articles"
                 :liked -> "No liked articles"
+                _ -> ""
               end
             %>
           </div>
         <% end %>
       </div>
     </div>
+
+    <.modal :if={@live_action in [:edit, :confirm_email]} id="account_settings" show on_cancel={JS.patch(~p"/accounts/profile/#{@account.id}")}>
+      <.live_component module={BlogAppWeb.AccountSettingsComponent} id={@live_action} current_account={@current_account} />
+    </.modal>
     """
   end
 
@@ -76,20 +81,40 @@ defmodule BlogAppWeb.AccountPageLive do
   end
 
   def handle_params(%{"account_id" => account_id}, _uri, socket) do
+    current_account = socket.assigns.current_account
+    current_account_id = get_current_account_id(current_account)
+
     socket =
       socket
       |> assign(:account, Accounts.get_account!(account_id))
       |> assign(:set_article_id, nil)
+      |> assign(:current_account_id, current_account_id)
       |> apply_action(socket.assigns.live_action)
 
     {:noreply, socket}
   end
 
+  def handle_params(%{"token" => token}, _uri, socket) do
+    socket =
+      case Accounts.update_account_email(socket.assigns.current_account, token) do
+        :ok ->
+          put_flash(socket, :info, "Email changed successfully.")
+
+        :error ->
+          put_flash(socket, :error, "Email change link is invalid or it has expired.")
+      end
+
+    {:noreply, push_navigate(socket, to: ~p"/accounts/profile/#{socket.assigns.current_account.id}")}
+  end
+
+  def handle_params(_params, _uri, socket) do
+    {:noreply, apply_action(socket, :edit)}
+  end
+
   # private function called in handle_params
   defp apply_action(socket, :info) do
     account = socket.assigns.account
-    current_account = socket.assigns.current_account
-    current_account_id = get_current_account_id(current_account)
+    current_account_id = socket.assigns.current_account_id
 
     articles =
       Articles.list_articles_for_account(account.id, current_account_id)
@@ -97,20 +122,29 @@ defmodule BlogAppWeb.AccountPageLive do
     socket
     |> assign(:articles, articles)
     |> assign(:articles_count, Enum.count(articles))
-    |> assign(:current_account_id, current_account_id)
     |> assign(:page_title, account.name)
+  end
+
+  defp apply_action(socket, :edit) do
+    account = socket.assigns.current_account
+
+    socket
+    |> assign(:account, account)
+    |> assign(:set_article_id, nil)
+    |> assign(:current_account_id, account.id)
+    |> assign(:articles, [])
+    |> assign_article_count(account.id, account.id)
+    |> assign(:page_title, "account settings")
   end
 
   defp apply_action(socket, :draft) do
     account = socket.assigns.account
-    current_account = socket.assigns.current_account
-    current_account_id = get_current_account_id(current_account)
+    current_account_id = socket.assigns.current_account_id
 
     if account.id == current_account_id do
       socket
       |> assign(:articles, Articles.list_draft_articles_for_account(current_account_id))
       |> assign_article_count(account.id, current_account_id)
-      |> assign(:current_account_id, current_account_id)
       |> assign(:page_title, account.name <> " - draft")
     else
       redirect(socket, to: ~p"/accounts/profile/#{account.id}")
@@ -119,8 +153,17 @@ defmodule BlogAppWeb.AccountPageLive do
 
   defp apply_action(socket, :liked) do
     account = socket.assigns.account
-    current_account = socket.assigns.current_account
-    current_account_id = get_current_account_id(current_account)
+    current_account_id = socket.assigns.current_account_id
+
+    socket
+    |> assign(:articles, Articles.list_liked_articles_for_account(account.id))
+    |> assign_article_count(account.id, current_account_id)
+    |> assign(:page_title, account.name <> " - liked")
+  end
+
+  defp apply_action(socket, :liked) do
+    account = socket.assigns.account
+    current_account_id = socket.assigns.current_account_id
 
     socket
     |> assign(:articles, Articles.list_liked_articles_for_account(account.id))
@@ -141,6 +184,28 @@ defmodule BlogAppWeb.AccountPageLive do
       |> Enum.count()
 
     assign(socket, :articles_count, articles_count)
+  end
+
+  def handle_info({:update_email, account}, socket) do
+    socket =
+      socket
+      |> put_flash(:info, "A link to confirm your email change has been sent to the new address.")
+      |> redirect(to: ~p"/accounts/profile/#{account.id}")
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:update_profile, account}, socket) do
+    socket =
+      socket
+      |> put_flash(:info, "Account profile updated successfully.")
+      |> redirect(to: ~p"/accounts/profile/#{account.id}")
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:update_password, account}, socket) do
+
   end
 
   def handle_event("set_article_id", %{"article_id" => article_id}, socket) do
@@ -169,7 +234,10 @@ defmodule BlogAppWeb.AccountPageLive do
 
   defp assign_article_when_deleted(socket, :info) do
     articles =
-      Articles.list_articles_for_account(socket.assigns.account.id, socket.assigns.current_account_id)
+      Articles.list_articles_for_account(
+        socket.assigns.account.id,
+        socket.assigns.current_account_id
+      )
 
     socket
     |> assign(:articles, articles)
@@ -179,7 +247,10 @@ defmodule BlogAppWeb.AccountPageLive do
 
   defp assign_article_when_deleted(socket, :draft) do
     socket
-    |> assign(:articles, Articles.list_draft_articles_for_account(socket.assigns.account_id, socket.assigns.current_account_id))
+    |> assign(
+      :articles,
+      Articles.list_draft_articles_for_account(socket.assigns.current_account_id)
+    )
     |> put_flash(:info, "Draft article deleted successfully.")
   end
 end
