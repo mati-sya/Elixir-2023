@@ -12,18 +12,21 @@ defmodule CounterAppWeb.CounterLive do
   end
 
   # "/counter"のルートにアクセスがあった場合まずこのmountが呼ばれる
+  # initialization processes can be done in mount function
   def mount(_params, _session, socket) do
     # returns true or false
+    # proves that mounted gets called twice
     if connected?(socket) do
       IO.puts("2回目")
     else
       IO.puts("1回目")
     end
 
+    # assign value with val 0 to html in render function
     {:ok, assign(socket, :value, 0)}
   end
 
-  # add events (functions: handle_event)
+  # "inc" --> when + button is clicked
   def handle_event("inc", _params, socket) do
     socket =
       update(socket, :value, fn value ->
@@ -33,7 +36,7 @@ defmodule CounterAppWeb.CounterLive do
     {:noreply, socket}
   end
 
-  # <.button type="button" phx-click="dec">-</.button>のボタンが押された時に呼ばれるイベント
+  # "dec" --> when - button is clicked
   def handle_event("dec", _params, socket) do
     socket =
       update(socket, :value, fn value ->
