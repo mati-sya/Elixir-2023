@@ -4,8 +4,9 @@ defmodule TodoAppWeb.HelloController do
   use TodoAppWeb, :controller
 
   # conn = connection, params = request parameters
+  # in router.ex :hello
   def hello(conn, _params) do
-    # render template with name "hello"
+    # render template with name "hello" (hello_html/hello.html.heex)
     render(conn, :hello)
   end
 end
